@@ -125,33 +125,48 @@ public class CreditCardServiceImplTest {
 				
 	}
 
-//	@Test
-//	public void testCardSave() {
-//		creditCardInputDto.setNumber("123456789");
-//		creditCardInputDto.setCvc(123);
-//		creditCardInputDto.setExpiry("08/20");
-//		
-//		
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
-//		String date = "01/" + creditCardInputDto.getExpiry();
-//		LocalDate cardExpiryDate = LocalDate.parse(date, formatter);
-//		
-//		
+	@Test
+	public void cardCheck() {
+	
+		
 //		Mockito.when(creditCardRepository.findByCardNumberAndCvvAndExpireDate(
-//				123456789L, 123, cardExpiryDate)).thenReturn(creditCardList);
-//
-//		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
-//		
-//		Mockito.when(otpRepository.save(otp)).thenReturn(otp);
-//		
-//		ResponseEntity<CreditCardOutputDto> actual = creditCardService.cardCheck(creditCardInputDto);
-//
-//		Assert.assertEquals(200, actual.getStatusCode());
-//		 
-//}
+//				creditCard.getCardNumber(), creditCard.getCvv(), creditCard.getExpireDate())).thenReturn(creditCardList);
+
+		Mockito.when(creditCardRepository.findByCardNumberAndCvvAndExpireDate(
+				Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(creditCardList);
+
+		Mockito.when(transactionRepository.save(Mockito.any())).thenReturn(transaction);
+		
+		Mockito.when(otpRepository.save(otp)).thenReturn(otp);
+		
+		ResponseEntity<CreditCardOutputDto> actual = creditCardService.cardCheck(creditCardInputDto);
+
+		Assert.assertEquals(200, actual.getStatusCode().value());
+		 
+}
+	
+	
+	@Test(expected = BankException.class)
+	public void cardCheckNegative() {
+		creditCardInputDto.setAmount(1000000000); 
+		
+//		Mockito.when(creditCardRepository.findByCardNumberAndCvvAndExpireDate(
+//				creditCard.getCardNumber(), creditCard.getCvv(), creditCard.getExpireDate())).thenReturn(creditCardList);
+
+		Mockito.when(creditCardRepository.findByCardNumberAndCvvAndExpireDate(
+				Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(creditCardList);
+
+		Mockito.when(transactionRepository.save(Mockito.any())).thenReturn(transaction);
+		
+		Mockito.when(otpRepository.save(otp)).thenReturn(otp);
+		
+		creditCardService.cardCheck(creditCardInputDto);
+
+		 
+}
 
 	@Test
-	public void testCardCheckOtpVerification() {
+	public void testCardCheckOtpVerification() { 
 		Mockito.when(otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransctionId())).thenReturn(otplist);
 		Mockito.when(transactionRepository
 		.findById(creditCardOtpVerificationInput.getTransctionId())).thenReturn(Optional.of(transaction));

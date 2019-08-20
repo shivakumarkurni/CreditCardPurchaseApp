@@ -54,6 +54,10 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		List<CreditCard> creditCards = creditCardRepository.findByCardNumberAndCvvAndExpireDate(cardNumber,
 				creditCardInputDto.getCvc(), cardExpiryDate);
+		
+		logger.info(" creditCards length:{}", creditCards.size());
+
+		
 		if (creditCards.isEmpty())
 			throw new BankException(" incorrect card details");
 
@@ -78,7 +82,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		// try {
 		// EmailDto emailDto = new EmailDto();
 		// emailDto.setEmailId("sairam4smile@gmail.com");
-		// emailDto.setSubject("subject for delete");
+		// emailDto.setSubject("subject for delete"); 
 		// emailDto.setTextBody(" delete for otp " + otpValue);
 		// template.postForEntity("http://10.117.189.248:9090/bankUtility/email",
 		// emailDto, String.class);
@@ -115,6 +119,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		return creditCardRepository.save(creditCard);
 	}
 
+	//card otp verification
 	@Override
 	public ResponseEntity<ResponseDto> cardCheckOtpVerification(
 			CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
@@ -125,6 +130,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 //		if (otps.isEmpty())
 //			throw new BankException("no transaction");
 
+		//card otp validation
 		if (!otps.get(0).getOtpValue().equals(creditCardOtpVerificationInput.getOtpValue()))
 			throw new BankException("wrong otp");
 
