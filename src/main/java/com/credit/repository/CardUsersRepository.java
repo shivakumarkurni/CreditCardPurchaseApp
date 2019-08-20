@@ -7,5 +7,6 @@ import com.credit.entity.CardUsers;
 
 @Repository
 public interface CardUsersRepository extends JpaRepository<CardUsers, Integer> {
+	
 
 }

@@ -23,9 +23,6 @@ public class Transaction {
 	private String status;
 	private String transactionType;
 	private String description;
-
-
-
 	private Integer cardId;
 
 
