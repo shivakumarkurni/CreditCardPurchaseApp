@@ -61,10 +61,7 @@ public class VerifyServiceImpl implements VerifyService {
 		creditCard.get()
 				.setAvailableBalance((creditCard.get().getAvailableBalance()) - (transaction.get().getAmount()));
 
-		if (creditCardRepository.save(creditCard.get()) != null) {
-			returnValue = true;
-		}
+		return creditCardRepository.save(creditCard.get())!=null;
 
-		return returnValue;
 	}
 }
