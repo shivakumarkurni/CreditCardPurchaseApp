@@ -22,7 +22,6 @@ public class Otp {
 	private Integer otpValue;
 	private LocalDateTime date;
 	
-	private Integer cardId;
-
+	private Integer transactionId;
 
 }
