@@ -58,10 +58,10 @@ public class TestCreditCardController {
 	public void testCardCheck() throws Exception {
 		CreditCardInputDto creditCardInputDto = new CreditCardInputDto();
 		creditCardInputDto.setAmount(4000);
-		creditCardInputDto.setCardNumber(1234567891234L);
-		creditCardInputDto.setCvv(1234);
-		creditCardInputDto.setExpiryMoth(11);
-		creditCardInputDto.setExpiryYear(21);
+		creditCardInputDto.setNumber("1234567891234");
+		creditCardInputDto.setCvc(1234);
+		creditCardInputDto.setExpiry("11/22");
+//		creditCardInputDto.setExpiry(21);
 		creditCardInputDto.setName("LAXMAN VERMA");
 		creditCardInputDto.setUserId(101);
 		
@@ -73,8 +73,8 @@ public class TestCreditCardController {
 	@Test
 	public void testCardCheckOtpVerification() throws Exception {
 		CreditCardOtpVerificationInput creditCardOtpVerificationInput = new CreditCardOtpVerificationInput();
-		creditCardOtpVerificationInput.setOtp(1234);
-		creditCardOtpVerificationInput.setTransactionId(1010);
+		creditCardOtpVerificationInput.setOtpValue(1234);
+		creditCardOtpVerificationInput.setTransctionId(1010);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonObject = objectMapper.writeValueAsString(creditCardOtpVerificationInput);
 		mockMvc.perform(post("/creditcard/verification").contentType(MediaType.APPLICATION_JSON).content(jsonObject)).andExpect(status().isOk());
