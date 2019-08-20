@@ -17,7 +17,7 @@ public class CreditCard {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer cardId;
-	private Integer cardNumber;
+	private Long cardNumber;
 	private Integer cvv;
 	private LocalDate expireDate;
 	private Integer availableLimit ;

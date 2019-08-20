@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.credit.dto.CreditCardInputDto;
+import com.credit.dto.CreditCardOtpVerificationInput;
 import com.credit.dto.CreditCardOutputDto;
 import com.credit.dto.ResponseDto;
 import com.credit.entity.CreditCard;
@@ -26,8 +27,21 @@ public class CreditCardController {
 
 	}
 	
+	
+	@PostMapping("/verification/")
+	public ResponseEntity<ResponseDto> cardCheckOtpVerification(@RequestBody CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
+		
+		
+		return creditCardService.cardCheckOtpVerification(creditCardOtpVerificationInput);
+
+		
+	}
+	
+	
 	@PostMapping("/cardSave")
 	public CreditCard cardSave(@RequestBody CreditCard creditCard) {
+		
+		
 		return creditCardService.cardSave(creditCard);
 
 	}

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.credit.dto.CreditCardInputDto;
+import com.credit.dto.CreditCardOtpVerificationInput;
 import com.credit.dto.CreditCardOutputDto;
 import com.credit.dto.ETransactionType;
 import com.credit.dto.ETransctionStatus;
-import com.credit.dto.EmailDto;
 import com.credit.dto.ResponseDto;
 import com.credit.entity.CreditCard;
 import com.credit.entity.Otp;
@@ -104,8 +105,34 @@ public class CreditCardServiceImpl implements CreditCardService {
 	}
 
 	@Override
-	public ResponseEntity<ResponseDto> cardCheckOtpVerification(CreditCardInputDto creditCardInputDto) {
-		return null;
+	public ResponseEntity<ResponseDto> cardCheckOtpVerification(CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
+
+		List<Otp> otps = otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransactionId());
+		
+		if(otps.isEmpty())
+			throw new BankException("no transaction");
+		
+		if(!otps.get(0).getOtpValue().equals(creditCardOtpVerificationInput.getOtp()))
+			throw new BankException("wrong otp");
+		
+		Optional<Transaction> transaction = transactionRepository.findById(creditCardOtpVerificationInput.getTransactionId());
+		transaction.get().setStatus(ETransctionStatus.SUCCSES.name());
+		transactionRepository.save(transaction.get());
+		 Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
+		 
+		if(!creditCard.isPresent())
+			throw new BankException("no card available");
+		
+		creditCard.get().setAvailableBalance((creditCard.get().getAvailableBalance())-(transaction.get().getAmount()));
+		
+		creditCardRepository.save(creditCard.get());
+		
+		
+		ResponseDto responseDto=new ResponseDto();
+		responseDto.setMessage("payement succsessfully");
+		responseDto.setStatusCode(HttpStatus.ACCEPTED.value());
+		
+		return  ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
 	}
 
 }

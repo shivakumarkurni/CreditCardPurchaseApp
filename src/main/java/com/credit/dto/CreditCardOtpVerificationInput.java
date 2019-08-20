@@ -6,8 +6,8 @@ import lombok.Setter;
 @Setter @Getter
 public class CreditCardOtpVerificationInput {
 	
-	private String TransactionId;
-//	private String TransactionId;
+	private Integer TransactionId;
+	private Integer otp;
 
 
 }

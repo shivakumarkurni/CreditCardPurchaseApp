@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.credit.entity.CreditCard;
 
 public interface CreditCardRepository  extends JpaRepository<CreditCard, Integer>{
-	List<CreditCard> findByCardNumberAndCvvAndExpireDate(Integer cardnumber, Integer cvv, LocalDate expireDate);
+	List<CreditCard> findByCardNumberAndCvvAndExpireDate(Long cardnumber, Integer cvv, LocalDate expireDate);
 
 }
