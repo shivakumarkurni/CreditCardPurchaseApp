@@ -19,8 +19,6 @@ import com.credit.dto.ResponseDto;
 import com.credit.entity.CreditCard;
 import com.credit.service.CreditCardService;
 import com.credit.service.VerifyService;
-
-
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 @RequestMapping("/creditcard")
 @RestController
@@ -36,25 +34,30 @@ public class CreditCardController {
 
 	@PostMapping("/")
 	public ResponseEntity<CreditCardOutputDto> cardCheck(@RequestBody CreditCardInputDto creditCardInputDto) {
+		LOGGER.info("CreditCardController --> cardCheck");
 		return creditCardService.cardCheck(creditCardInputDto);
 	}
 
 	@PostMapping("/verification/")
-	public ResponseEntity<ResponseDto> cardCheckOtpVerification(@RequestBody CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
+	public ResponseEntity<ResponseDto> cardCheckOtpVerification(
+			@RequestBody CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
 
+		LOGGER.info("CreditCardController --> cardCheckOtpVerification");
 		return creditCardService.cardCheckOtpVerification(creditCardOtpVerificationInput);
-	}
+
+		}
 
 	@PostMapping("/cardSave")
 	public CreditCard cardSave(@RequestBody CreditCard creditCard) {
 
+		LOGGER.info("CreditCardController --> cardSave");
 		return creditCardService.cardSave(creditCard);
 	}
 
 	@PostMapping("/verification")
 	public ResponseEntity<String> verifyOtp(@RequestBody OtpDto otpDto) {
 
-		LOGGER.info("CreditCardController :: " + otpDto);
+		LOGGER.info("CreditCardController otp: {}" , otpDto);
 		return new ResponseEntity<>(verifyService.verifyOtp(otpDto), HttpStatus.OK);
 
 	}

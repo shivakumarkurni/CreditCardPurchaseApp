@@ -6,14 +6,11 @@ import lombok.Setter;
 @Setter @Getter
 public class CreditCardInputDto {
 	
-	private Long cardNumber;
-	private Integer cvv;
-	private Integer expiryMoth;
-	private Integer expiryYear;
+	private String number;
+	private Integer cvc;
+	private String expiry;
 	private String name;
 	private Integer amount;
 	private Integer userId;
-
-
 
 }
