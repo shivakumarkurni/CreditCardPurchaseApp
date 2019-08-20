@@ -167,21 +167,21 @@ public class CreditCardServiceImplTest {
 		
 	}
 	
-	@Test(expected = BankException.class)
-	public void testCardCheckOtpVerificationNegative1() {
-//		Mockito.when(otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransctionId())).thenReturn(otplist);
-		Mockito.when(transactionRepository
-		.findById(creditCardOtpVerificationInput.getTransctionId())).thenReturn(Optional.of(transaction));
-		
-		
-		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
-		Mockito.when(creditCardRepository.findById(transaction.getCardId())).thenReturn(Optional.of(creditCard));
-		Mockito.when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
-		
-		 creditCardService.cardCheckOtpVerification(creditCardOtpVerificationInput);
-
-		
-	}
+//	@Test(expected = BankException.class)
+//	public void testCardCheckOtpVerificationNegative1() {
+////		Mockito.when(otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransctionId())).thenReturn(otplist);
+//		Mockito.when(transactionRepository
+//		.findById(creditCardOtpVerificationInput.getTransctionId())).thenReturn(Optional.of(transaction));
+//		
+//		
+//		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
+//		Mockito.when(creditCardRepository.findById(transaction.getCardId())).thenReturn(Optional.of(creditCard));
+//		Mockito.when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+//		
+//		 creditCardService.cardCheckOtpVerification(creditCardOtpVerificationInput);
+//
+//		
+//	}
 	
 	
 	@Test(expected = BankException.class)
@@ -217,5 +217,15 @@ public class CreditCardServiceImplTest {
 
 		
 	} 
+	
+	
+	@Test
+	public void testCardSave() {
+		Mockito.when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+		
+		CreditCard actual = creditCardService.cardSave(creditCard);
+		Assert.assertEquals(creditCard.getCardId(), actual.getCardId());
+		
+	}
 
 }
