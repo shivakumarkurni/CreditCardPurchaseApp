@@ -39,9 +39,8 @@ public class VerifyServiceImpl implements VerifyService {
 		Optional<Otp> otpList = otpRepository.findByTransactionIdAndOtpValue(otpDto.getTransactionId(),
 				otpDto.getOtp());
 		if (otpList.isPresent()) {
-			if (settelTransaction(otpDto)) {
-				returnValue = "Successfully verified.";
-			}
+			settelTransaction(otpDto);
+			returnValue = "Successfully verified.";
 		} else {
 			returnValue = "Otp is wrong.";
 		}
@@ -50,17 +49,18 @@ public class VerifyServiceImpl implements VerifyService {
 		return returnValue;
 	}
 
-	public boolean settelTransaction(OtpDto otpDto) {
+	public void settelTransaction(OtpDto otpDto) {
 
 		Optional<Transaction> transaction = transactionRepository.findById(otpDto.getTransactionId());
-		transaction.get().setStatus("SUCCSES");
-		transactionRepository.save(transaction.get());
-		Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
-		if (transaction.isPresent() && creditCard.isPresent()) {
-			creditCard.get()
-					.setAvailableBalance((creditCard.get().getAvailableBalance()) - (transaction.get().getAmount()));
+		if (transaction.isPresent()) {
+			transaction.get().setStatus("SUCCSES");
+			transactionRepository.save(transaction.get());
+			Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
+			if (creditCard.isPresent()) {
+				creditCard.get().setAvailableBalance(
+						(creditCard.get().getAvailableBalance()) - (transaction.get().getAmount()));
+				creditCardRepository.save(creditCard.get());
+			}
 		}
-		return creditCardRepository.save(creditCard.get()) != null;
-
 	}
 }
