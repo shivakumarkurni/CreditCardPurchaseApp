@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import com.credit.repository.TransactionRepository;
 
 @Service
 public class CreditCardServiceImpl implements CreditCardService {
+	private final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);
 
 	@Autowired
 	CreditCardRepository creditCardRepository;
@@ -39,17 +42,29 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 	@Override
 	public ResponseEntity<CreditCardOutputDto> cardCheck(CreditCardInputDto creditCardInputDto) {
+		logger.info("CreditCardServiceImpl------>  cardCheck");
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
 
-//		String date = "01/" + creditCardInputDto.getExpiryMoth() + "/" + creditCardInputDto.getExpiryYear();
-		String date = "01/09/2022";
+//		String date = "01";
+//		if(creditCardInputDto.getExpiryMoth()<10)
+//			date=date+"/0"+ creditCardInputDto.getExpiryMoth()+"/"+creditCardInputDto.getExpiryYear();
+//		else
+//			date=date+"/"+ creditCardInputDto.getExpiryMoth()+"/"+creditCardInputDto.getExpiryYear();
+
+		String date = "01/" + creditCardInputDto.getExpiry();
+
 		LocalDate cardExpiryDate = LocalDate.parse(date, formatter);
+		
+		Long cardNumber=Long.parseLong(creditCardInputDto.getNumber().replace(" ", ""));
 
 		List<CreditCard> creditCards = creditCardRepository.findByCardNumberAndCvvAndExpireDate(
-				creditCardInputDto.getCardNumber(), creditCardInputDto.getCvv(), cardExpiryDate);
+				cardNumber, creditCardInputDto.getCvc(), cardExpiryDate);
 		if (creditCards.isEmpty())
 			throw new BankException(" incorrect card details");
+
+		if (creditCards.get(0).getAvailableBalance() < creditCardInputDto.getAmount())
+			throw new BankException(" no sufficient balance"); 
 
 		// transaction Details added
 		Transaction transaction = new Transaction();
@@ -60,7 +75,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		transaction.setTransactionType(ETransactionType.DEBIT.name());
 		Transaction transactionSave = transactionRepository.save(transaction);
 
-		// otp generation
+		// otp generation 
 
 		RestTemplate template = new RestTemplate();
 		ResponseEntity<Integer> otpValue = template.getForEntity("http://10.117.189.248:9090/bankUtility/otp",
@@ -94,6 +109,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 	@Override
 	public CreditCard cardSave(CreditCard creditCard) {
+		logger.info("CreditCardServiceImpl------>  cardSave");
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String date = "01/09/2022";
@@ -105,34 +121,37 @@ public class CreditCardServiceImpl implements CreditCardService {
 	}
 
 	@Override
-	public ResponseEntity<ResponseDto> cardCheckOtpVerification(CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
+	public ResponseEntity<ResponseDto> cardCheckOtpVerification(
+			CreditCardOtpVerificationInput creditCardOtpVerificationInput) {
 
-		List<Otp> otps = otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransactionId());
-		
-		if(otps.isEmpty())
+		logger.info("CreditCardServiceImpl------>  cardCheckOtpVerification");
+		List<Otp> otps = otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransctionId());
+
+		if (otps.isEmpty())
 			throw new BankException("no transaction");
-		
-		if(!otps.get(0).getOtpValue().equals(creditCardOtpVerificationInput.getOtp()))
+
+		if (!otps.get(0).getOtpValue().equals(creditCardOtpVerificationInput.getOtpValue()))
 			throw new BankException("wrong otp");
-		
-		Optional<Transaction> transaction = transactionRepository.findById(creditCardOtpVerificationInput.getTransactionId());
+
+		Optional<Transaction> transaction = transactionRepository
+				.findById(creditCardOtpVerificationInput.getTransctionId());
 		transaction.get().setStatus(ETransctionStatus.SUCCSES.name());
 		transactionRepository.save(transaction.get());
-		 Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
-		 
-		if(!creditCard.isPresent())
+		Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
+
+		if (!creditCard.isPresent())
 			throw new BankException("no card available");
-		
-		creditCard.get().setAvailableBalance((creditCard.get().getAvailableBalance())-(transaction.get().getAmount()));
-		
+
+		creditCard.get()
+				.setAvailableBalance((creditCard.get().getAvailableBalance()) - (transaction.get().getAmount()));
+
 		creditCardRepository.save(creditCard.get());
-		
-		
-		ResponseDto responseDto=new ResponseDto();
+
+		ResponseDto responseDto = new ResponseDto();
 		responseDto.setMessage("payement succsessfully");
-		responseDto.setStatusCode(HttpStatus.ACCEPTED.value());
-		
-		return  ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
+		responseDto.setStatusCode(HttpStatus.OK.value());
+
+		return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 	}
 
 }
