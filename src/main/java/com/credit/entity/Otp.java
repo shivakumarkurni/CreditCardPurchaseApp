@@ -24,5 +24,4 @@ public class Otp {
 	
 	private Integer transactionId;
 
-
 }

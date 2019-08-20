@@ -30,6 +30,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(responseDto, HttpStatus.NOT_FOUND);
 
 	}
+	
+	@ExceptionHandler(NoRecordsFound.class)
+	public ResponseEntity<ResponseDto> globalExceptionHandler(NoRecordsFound exception, WebRequest request) {
+		ResponseDto responseDto = new ResponseDto();
+		responseDto.setMessage(exception.getMessage());
+		responseDto.setStatusCode(401);
+		return new ResponseEntity<>(responseDto, HttpStatus.NOT_FOUND);
+
+	}
+	
+	@ExceptionHandler(NoCard.class)
+	public ResponseEntity<ResponseDto> globalExceptionHandler(NoCard exception, WebRequest request) {
+		ResponseDto responseDto = new ResponseDto();
+		responseDto.setMessage(exception.getMessage());
+		responseDto.setStatusCode(401);
+		return new ResponseEntity<>(responseDto, HttpStatus.NOT_FOUND);
+
+	}
+
 
 	
 }

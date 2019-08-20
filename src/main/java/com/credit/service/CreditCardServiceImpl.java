@@ -46,25 +46,19 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
 
-//		String date = "01";
-//		if(creditCardInputDto.getExpiryMoth()<10)
-//			date=date+"/0"+ creditCardInputDto.getExpiryMoth()+"/"+creditCardInputDto.getExpiryYear();
-//		else
-//			date=date+"/"+ creditCardInputDto.getExpiryMoth()+"/"+creditCardInputDto.getExpiryYear();
-
 		String date = "01/" + creditCardInputDto.getExpiry();
 
 		LocalDate cardExpiryDate = LocalDate.parse(date, formatter);
-		
-		Long cardNumber=Long.parseLong(creditCardInputDto.getNumber().replace(" ", ""));
 
-		List<CreditCard> creditCards = creditCardRepository.findByCardNumberAndCvvAndExpireDate(
-				cardNumber, creditCardInputDto.getCvc(), cardExpiryDate);
+		Long cardNumber = Long.parseLong(creditCardInputDto.getNumber().replace(" ", ""));
+
+		List<CreditCard> creditCards = creditCardRepository.findByCardNumberAndCvvAndExpireDate(cardNumber,
+				creditCardInputDto.getCvc(), cardExpiryDate);
 		if (creditCards.isEmpty())
 			throw new BankException(" incorrect card details");
 
 		if (creditCards.get(0).getAvailableBalance() < creditCardInputDto.getAmount())
-			throw new BankException(" no sufficient balance"); 
+			throw new BankException(" no sufficient balance");
 
 		// transaction Details added
 		Transaction transaction = new Transaction();
@@ -75,21 +69,22 @@ public class CreditCardServiceImpl implements CreditCardService {
 		transaction.setTransactionType(ETransactionType.DEBIT.name());
 		Transaction transactionSave = transactionRepository.save(transaction);
 
-		// otp generation 
+		// otp generation
 
 		RestTemplate template = new RestTemplate();
 		ResponseEntity<Integer> otpValue = template.getForEntity("http://10.117.189.248:9090/bankUtility/otp",
 				Integer.class);
 
-//		try {
-//			EmailDto emailDto = new EmailDto();
-//			emailDto.setEmailId("sairam4smile@gmail.com");
-//			emailDto.setSubject("subject for delete");
-//			emailDto.setTextBody(" delete for otp " + otpValue);
-//			template.postForEntity("http://10.117.189.248:9090/bankUtility/email", emailDto, String.class);
-//		} catch (Exception e) {
-//
-//		}
+		// try {
+		// EmailDto emailDto = new EmailDto();
+		// emailDto.setEmailId("sairam4smile@gmail.com");
+		// emailDto.setSubject("subject for delete");
+		// emailDto.setTextBody(" delete for otp " + otpValue);
+		// template.postForEntity("http://10.117.189.248:9090/bankUtility/email",
+		// emailDto, String.class);
+		// } catch (Exception e) {
+		//
+		// }
 
 		// otp saving
 		Otp otp = new Otp();
@@ -127,14 +122,15 @@ public class CreditCardServiceImpl implements CreditCardService {
 		logger.info("CreditCardServiceImpl------>  cardCheckOtpVerification");
 		List<Otp> otps = otpRepository.findByTransactionId(creditCardOtpVerificationInput.getTransctionId());
 
-		if (otps.isEmpty())
-			throw new BankException("no transaction");
+//		if (otps.isEmpty())
+//			throw new BankException("no transaction");
 
 		if (!otps.get(0).getOtpValue().equals(creditCardOtpVerificationInput.getOtpValue()))
 			throw new BankException("wrong otp");
 
 		Optional<Transaction> transaction = transactionRepository
 				.findById(creditCardOtpVerificationInput.getTransctionId());
+
 		transaction.get().setStatus(ETransctionStatus.SUCCSES.name());
 		transactionRepository.save(transaction.get());
 		Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
@@ -149,9 +145,11 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		ResponseDto responseDto = new ResponseDto();
 		responseDto.setMessage("payement succsessfully");
+
 		responseDto.setStatusCode(HttpStatus.OK.value());
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
 	}
 
 }
