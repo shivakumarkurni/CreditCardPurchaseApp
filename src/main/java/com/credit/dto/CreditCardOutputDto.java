@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Setter @Getter
-public class ResponseDto {
+public class CreditCardOutputDto {
 	
 	private String message;
 	private Integer statusCode;
-	
+	private Integer transctionId;
 
 }

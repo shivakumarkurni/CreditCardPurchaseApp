@@ -1,5 +1,6 @@
 package com.credit.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,7 @@ import com.credit.entity.Otp;
 public interface OtpRepository extends JpaRepository<Otp, Integer> {
 
 	Optional<Otp> findByTransactionIdAndOtpValue(int transactionId, int otpValue);
+
+	List<Otp> findByTransactionId(Integer transactionid);
+
 }
