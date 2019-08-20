@@ -131,7 +131,9 @@ public class CreditCardServiceImpl implements CreditCardService {
 		Optional<Transaction> transaction = transactionRepository
 				.findById(creditCardOtpVerificationInput.getTransctionId());
 
-		transaction.get().setStatus(ETransctionStatus.SUCCSES.name());
+		if(transaction.isPresent()) {
+			transaction.get().setStatus(ETransctionStatus.SUCCSES.name());
+		}
 		transactionRepository.save(transaction.get());
 		Optional<CreditCard> creditCard = creditCardRepository.findById(transaction.get().getCardId());
 
