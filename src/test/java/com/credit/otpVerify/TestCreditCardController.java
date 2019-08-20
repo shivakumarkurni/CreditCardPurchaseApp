@@ -3,13 +3,10 @@ package com.credit.otpVerify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,16 +18,10 @@ import com.credit.controller.CreditCardController;
 import com.credit.dto.CreditCardInputDto;
 import com.credit.dto.CreditCardOtpVerificationInput;
 import com.credit.dto.OtpDto;
-import com.credit.entity.CreditCard;
-import com.credit.service.VerifyServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestCreditCardController {
-
-	@Mock
-	private VerifyServiceImpl verifyServiceImpl;
 
 	private MockMvc mockMvc;
 

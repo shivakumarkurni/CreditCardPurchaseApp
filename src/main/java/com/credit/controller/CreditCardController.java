@@ -54,11 +54,4 @@ public class CreditCardController {
 		return creditCardService.cardSave(creditCard);
 	}
 
-	@PostMapping("/verification")
-	public ResponseEntity<String> verifyOtp(@RequestBody OtpDto otpDto) {
-
-		LOGGER.info("CreditCardController otp: {}" , otpDto);
-		return new ResponseEntity<>(verifyService.verifyOtp(otpDto), HttpStatus.OK);
-
-	}
 }
