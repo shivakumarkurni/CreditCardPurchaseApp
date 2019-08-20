@@ -52,7 +52,7 @@ public class VerifyServiceImpl implements VerifyService {
 
 	public boolean settelTransaction(OtpDto otpDto) {
 
-		Boolean returnValue = true;
+		Boolean returnValue = false;
 
 		Optional<Transaction> transaction = transactionRepository.findById(otpDto.getTransactionId());
 		transaction.get().setStatus("SUCCSES");
@@ -61,8 +61,8 @@ public class VerifyServiceImpl implements VerifyService {
 		creditCard.get()
 				.setAvailableBalance((creditCard.get().getAvailableBalance()) - (transaction.get().getAmount()));
 
-		if (creditCardRepository.save(creditCard.get()) == null) {
-			returnValue = false;
+		if (creditCardRepository.save(creditCard.get()) != null) {
+			returnValue = true;
 		}
 
 		return returnValue;

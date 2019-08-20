@@ -23,7 +23,7 @@ import com.credit.service.VerifyServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class testVerifyOtpController {
+public class TestCreditCardController {
 
 	@Mock
 	private VerifyServiceImpl verifyServiceImpl;
@@ -49,4 +49,5 @@ public class testVerifyOtpController {
 		String jsonObject = objectMapper.writeValueAsString(otpDto);
 		mockMvc.perform(post("/creditcard/verification").contentType(MediaType.APPLICATION_JSON).content(jsonObject)).andExpect(status().isOk());
 	}
+	
 }
